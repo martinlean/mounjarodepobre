@@ -29,18 +29,15 @@ const startQuiz = inject('startQuiz')
 const done = ref(false)
 const iframeRef = ref(null)
 
-function onComplete() { done.value = true }
+const VIDEO_DURATION = 7 * 60 + 20 // 7min 20s = 440s
 
-// Escuta postMessage do player tynk.ai para detectar fim do vídeo
-function onMessage(e) {
-  const d = e.data
-  if (!d) return
-  const str = typeof d === 'string' ? d : JSON.stringify(d)
-  if (/ended|complete|finish|videoEnd/i.test(str)) onComplete()
-}
+let timer = null
 
-onMounted(() => window.addEventListener('message', onMessage))
-onUnmounted(() => window.removeEventListener('message', onMessage))
+onMounted(() => {
+  timer = setTimeout(() => { done.value = true }, VIDEO_DURATION * 1000)
+})
+
+onUnmounted(() => clearTimeout(timer))
 </script>
 
 <style scoped>

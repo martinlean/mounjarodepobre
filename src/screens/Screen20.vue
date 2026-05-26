@@ -191,18 +191,32 @@ const iframeRef     = ref(null)
 const ctaUnlocked   = ref(false)
 const videoProgress = ref(0)
 
-function onVideoComplete() { ctaUnlocked.value = true; videoProgress.value = 100 }
+const VIDEO_DURATION = 6 * 60 + 10 // 6min 10s = 370s
 
-// Escuta postMessage do player tynk.ai para detectar fim do vídeo
-function onMessage(e) {
-  const d = e.data
-  if (!d) return
-  const str = typeof d === 'string' ? d : JSON.stringify(d)
-  if (/ended|complete|finish|videoEnd/i.test(str)) onVideoComplete()
-}
+let unlockTimer = null
+let progressInterval = null
 
-onMounted(() => window.addEventListener('message', onMessage))
-onUnmounted(() => window.removeEventListener('message', onMessage))
+onMounted(() => {
+  const start = Date.now()
+
+  // Barra de progresso atualiza a cada segundo
+  progressInterval = setInterval(() => {
+    const elapsed = (Date.now() - start) / 1000
+    videoProgress.value = Math.min(100, (elapsed / VIDEO_DURATION) * 100)
+  }, 1000)
+
+  // Botão aparece ao fim do vídeo
+  unlockTimer = setTimeout(() => {
+    ctaUnlocked.value = true
+    videoProgress.value = 100
+    clearInterval(progressInterval)
+  }, VIDEO_DURATION * 1000)
+})
+
+onUnmounted(() => {
+  clearTimeout(unlockTimer)
+  clearInterval(progressInterval)
+})
 
 
 const testimonials = [
