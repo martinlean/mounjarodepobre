@@ -6,8 +6,7 @@
 
       <div class="cycle-diagram">
         <div class="cycle-center">
-          <span>🌿</span>
-          <span class="product-name">[NOME DO<br>PRODUTO]</span>
+          <img src="/images/logo.jpeg" alt="Mounjaro de Pobre" class="cycle-logo" />
         </div>
         <div class="cycle-node node-top">Você</div>
         <div class="cycle-node node-right">Ativa Hormônio<br>Assassino de<br>Gordura</div>
@@ -65,14 +64,11 @@ const next = inject('next')
   border: 2px solid #22c55e;
   border-radius: 50%;
   width: 80px; height: 80px;
-  display: flex; flex-direction: column;
+  display: flex;
   align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: #22c55e;
-  gap: 2px;
-  line-height: 1.2;
   z-index: 2;
 }
-.cycle-center span:first-child { font-size: 20px; }
+.cycle-logo { width: 60px; height: 60px; object-fit: contain; border-radius: 50%; }
 .cycle-node {
   position: absolute;
   background: #22c55e;

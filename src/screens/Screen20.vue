@@ -34,14 +34,15 @@
       <p class="watch-txt">▶ Assista o vídeo completo para liberar o acesso</p>
     </div>
 
-    <!-- CTA principal (aparece após vídeo) -->
-    <Transition name="cta-pop">
-      <div v-if="ctaUnlocked" class="cta-primary">
+    <!-- ===================== CONTEÚDO DE VENDAS (só após timer) ===================== -->
+    <template v-if="ctaUnlocked">
+
+    <!-- CTA principal -->
+    <Transition name="cta-pop" appear>
+      <div class="cta-primary">
         <a :href="CTA_URL" target="_blank" class="cta-btn-main">QUERO A RECEITA!</a>
       </div>
     </Transition>
-
-    <!-- ===================== CONTEÚDO DE VENDAS ===================== -->
 
     <!-- Comparação SEM vs COM -->
     <div class="compare-section">
@@ -165,6 +166,8 @@
     <div class="cta-final cta-last">
       <a :href="CTA_URL" target="_blank" class="cta-btn-main">QUERO A RECEITA!</a>
     </div>
+
+    </template><!-- /v-if="ctaUnlocked" -->
 
   </div>
 </template>
