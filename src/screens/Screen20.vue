@@ -3,7 +3,7 @@
 
     <!-- Logo -->
     <div class="logo-wrap">
-      <img :src="'/images/logo.jpg'" alt="Mounjaro de Pobre" class="top-logo" />
+      <img :src="'/images/logo.jpeg'" alt="Mounjaro de Pobre" class="top-logo" />
     </div>
 
     <!-- Título -->
@@ -16,7 +16,14 @@
 
     <!-- Vídeo final -->
     <div class="video-wrap">
-      <VideoPlayer src="/videos/final.m2ts" @complete="onVideoComplete" />
+      <iframe
+        ref="iframeRef"
+        src="https://play.tynk.ai/p/a7aa1c33-ac68-4196-9c5a-8130c0195a81"
+        class="tynk-iframe"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        frameborder="0"
+      />
     </div>
 
     <!-- Aviso aguardando vídeo -->
@@ -163,16 +170,39 @@
 </template>
 
 <script setup>
-import { ref, inject } from 'vue'
-import VideoPlayer from '../components/VideoPlayer.vue'
+import { ref, inject, computed, onMounted, onUnmounted } from 'vue'
 
-const state   = inject('state')
-const CTA_URL = 'https://www.hubpay.tech/c/acesso-vitalicio'
+const state = inject('state')
 
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
+
+const CTA_URL = computed(() => {
+  const base = 'https://www.hubpay.tech/c/acesso-vitalicio'
+  const params = new URLSearchParams()
+  UTM_KEYS.forEach(k => {
+    const val = sessionStorage.getItem(k)
+    if (val) params.set(k, val)
+  })
+  const qs = params.toString()
+  return qs ? `${base}?${qs}` : base
+})
+
+const iframeRef     = ref(null)
 const ctaUnlocked   = ref(false)
 const videoProgress = ref(0)
 
 function onVideoComplete() { ctaUnlocked.value = true; videoProgress.value = 100 }
+
+// Escuta postMessage do player tynk.ai para detectar fim do vídeo
+function onMessage(e) {
+  const d = e.data
+  if (!d) return
+  const str = typeof d === 'string' ? d : JSON.stringify(d)
+  if (/ended|complete|finish|videoEnd/i.test(str)) onVideoComplete()
+}
+
+onMounted(() => window.addEventListener('message', onMessage))
+onUnmounted(() => window.removeEventListener('message', onMessage))
 
 
 const testimonials = [
@@ -236,7 +266,13 @@ const journeyWeeks = [
 .hero-sub { font-size: 14px; color: #22c55e; font-weight: 600; margin-top: 6px; }
 
 /* Vídeo */
-.video-wrap { padding: 0 20px 12px; }
+.video-wrap { padding: 0; }
+.tynk-iframe {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border: 0;
+  display: block;
+}
 
 /* CTA principal */
 .cta-primary { padding: 4px 20px 12px; }

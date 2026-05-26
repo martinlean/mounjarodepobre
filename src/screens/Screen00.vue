@@ -1,17 +1,20 @@
 <template>
   <div class="intro-wrap">
-    <!-- Apenas o vídeo, sem texto -->
     <div class="video-container">
-      <VideoPlayer
-        src="/videos/intro.m2ts"
-        @complete="onComplete"
+      <iframe
+        ref="iframeRef"
+        src="https://play.tynk.ai/p/551cee9b-e408-4068-921f-2b40f912d168"
+        class="tynk-iframe"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        frameborder="0"
       />
     </div>
 
     <!-- Botão aparece somente após o vídeo terminar -->
     <Transition name="cta-pop">
       <div v-show="done" class="cta-area">
-        <button class="cta-btn" @click="$emit('start')">
+        <button class="cta-btn" @click="startQuiz">
           QUERO A RECEITA! 🌿
         </button>
       </div>
@@ -20,37 +23,46 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import VideoPlayer from '../components/VideoPlayer.vue'
+import { ref, inject, onMounted, onUnmounted } from 'vue'
 
-defineEmits(['start'])
-
+const startQuiz = inject('startQuiz')
 const done = ref(false)
+const iframeRef = ref(null)
+
 function onComplete() { done.value = true }
+
+// Escuta postMessage do player tynk.ai para detectar fim do vídeo
+function onMessage(e) {
+  const d = e.data
+  if (!d) return
+  const str = typeof d === 'string' ? d : JSON.stringify(d)
+  if (/ended|complete|finish|videoEnd/i.test(str)) onComplete()
+}
+
+onMounted(() => window.addEventListener('message', onMessage))
+onUnmounted(() => window.removeEventListener('message', onMessage))
 </script>
 
 <style scoped>
 .intro-wrap {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 70px);
+  min-height: 100vh;
   background: #000;
 }
 
 .video-container {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  align-items: stretch;
 }
 
-/* Sobrescreve max-width do VideoPlayer para ocupar toda a tela */
-.video-container :deep(.vp-wrap) {
-  max-width: 100%;
-  border-radius: 0;
+.tynk-iframe {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border: 0;
+  display: block;
   flex: 1;
-  height: 100%;
 }
 
 .cta-area {
@@ -75,7 +87,6 @@ function onComplete() { done.value = true }
 }
 .cta-btn:active { transform: scale(0.98); }
 
-/* Animação de entrada do botão */
 .cta-pop-enter-active { transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .cta-pop-enter-from { opacity: 0; transform: translateY(20px) scale(0.9); }
 </style>

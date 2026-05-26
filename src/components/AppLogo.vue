@@ -2,7 +2,7 @@
   <div class="logo">
     <img
       v-if="!imgError"
-      :src="'/images/logo.jpg'"
+      :src="'/images/logo.jpeg'"
       alt="Mounjaro de Pobre"
       class="logo-img"
       @error="imgError = true"
