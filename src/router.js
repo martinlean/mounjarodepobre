@@ -25,12 +25,14 @@ import Screen20 from './screens/Screen20.vue'
 // Preserva UTMs ao navegar entre rotas
 function keepUtms(to, from) {
   const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
-  const missing = UTM_KEYS.some(k => !(k in to.query))
-  const hasFromUtm = UTM_KEYS.some(k => k in from.query)
-  if (missing && hasFromUtm) {
-    const utms = {}
-    UTM_KEYS.forEach(k => { if (from.query[k]) utms[k] = from.query[k] })
-    return { ...to, query: { ...to.query, ...utms } }
+  // Só copia UTMs que existem em `from` E ainda não estão em `to`
+  const toAdd = {}
+  UTM_KEYS.forEach(k => {
+    if (from.query[k] && !(k in to.query)) toAdd[k] = from.query[k]
+  })
+  // Só redireciona se há algo novo para adicionar — evita loop infinito
+  if (Object.keys(toAdd).length > 0) {
+    return { ...to, query: { ...to.query, ...toAdd } }
   }
 }
 
