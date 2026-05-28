@@ -283,16 +283,17 @@ const journeyWeeks = [
 .hero-sub { font-size: 14px; color: #22c55e; font-weight: 600; margin-top: 6px; }
 
 /* Vídeo */
-.video-wrap { padding: 0; }
+.video-wrap { padding: 0; overflow: hidden; }
 .tynk-iframe {
   width: 100%;
   aspect-ratio: 9 / 16;
   border: 0;
   display: block;
+  /* sem flex:1 para não conflitar com aspect-ratio */
 }
 
 /* CTA principal */
-.cta-primary { padding: 4px 20px 12px; }
+.cta-primary { padding: 4px 20px 12px; position: relative; z-index: 10; }
 .cta-btn-main {
   display: flex; align-items: center; justify-content: center;
   width: 100%; height: 58px;
@@ -309,7 +310,7 @@ const journeyWeeks = [
 .cta-btn-main:active { transform: scale(0.98); }
 
 /* Progress hint */
-.watch-hint { padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 6px; }
+.watch-hint { padding: 4px 20px 16px; display: flex; flex-direction: column; gap: 6px; position: relative; z-index: 10; }
 .watch-bar { height: 5px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
 .watch-fill { height: 100%; background: #22c55e; border-radius: 99px; transition: width 1s linear; }
 .watch-txt { font-size: 12px; color: #9ca3af; text-align: center; }

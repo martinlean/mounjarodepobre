@@ -51,7 +51,9 @@ onUnmounted(() => clearTimeout(timer))
 .video-container {
   flex: 1;
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
+  overflow: hidden;   /* impede iframe de vazar para fora */
+  min-height: 0;      /* necessário em flex para filhos não transbordarem */
 }
 
 .tynk-iframe {
@@ -59,12 +61,15 @@ onUnmounted(() => clearTimeout(timer))
   aspect-ratio: 9 / 16;
   border: 0;
   display: block;
-  flex: 1;
+  /* SEM flex: 1 — o aspect-ratio controla a altura; flex:1 conflitava */
 }
 
 .cta-area {
   padding: 16px 20px 32px;
   background: #000;
+  position: relative;  /* garante que fique acima do iframe */
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 .cta-btn {
